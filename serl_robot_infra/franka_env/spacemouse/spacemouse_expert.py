@@ -47,8 +47,11 @@ class SpaceMouseExpert:
                 buttons = state[0].buttons
 
             # Update the shared state
-            self.latest_data["action"] = action
-            self.latest_data["buttons"] = buttons
+            try:
+                self.latest_data["action"] = action
+                self.latest_data["buttons"] = buttons
+            except BrokenPipeError:
+                pass  # 程序退出时忽略管道断开错误
 
     def get_action(self) -> Tuple[np.ndarray, list]:
         """Returns the latest action and button state of the SpaceMouse."""
