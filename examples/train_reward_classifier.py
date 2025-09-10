@@ -19,10 +19,9 @@ from experiments.mappings import CONFIG_MAPPING
 
 
 FLAGS = flags.FLAGS
-flags.DEFINE_string("exp_name", "ram_insertion", "Name of experiment corresponding to folder.")
-flags.DEFINE_integer("num_epochs", 200, "Number of training epochs.")
+flags.DEFINE_string("exp_name", None, "Name of experiment corresponding to folder.")
+flags.DEFINE_integer("num_epochs", 150, "Number of training epochs.")
 flags.DEFINE_integer("batch_size", 256, "Batch size.")
-flags.DEFINE_string("data_dir", "/home/eai/ccw/hil-serl/examples/experiments/ram_insertion", "Path to the data directory.")
 
 
 def main(_):
@@ -41,10 +40,7 @@ def main(_):
         include_label=True,
     )
 
-    success_paths = glob.glob(os.path.join(FLAGS.data_dir, "classifier_data", "*success*.pkl"))
-    print(f"Success pkl paths:{success_paths}")
-    print("==========================")
-    print(FLAGS.data_dir)
+    success_paths = glob.glob(os.path.join(os.getcwd(), "classifier_data", "*success*.pkl"))
     for path in success_paths:
         success_data = pkl.load(open(path, "rb"))
         for trans in success_data:
@@ -68,7 +64,7 @@ def main(_):
         capacity=50000,
         include_label=True,
     )
-    failure_paths = glob.glob(os.path.join(FLAGS.data_dir, "classifier_data", "*failure*.pkl"))
+    failure_paths = glob.glob(os.path.join(os.getcwd(), "classifier_data", "*failure*.pkl"))
     for path in failure_paths:
         failure_data = pkl.load(
             open(path, "rb")
@@ -155,7 +151,7 @@ def main(_):
         )
 
     checkpoints.save_checkpoint(
-        os.path.join(FLAGS.data_dir, "classifier_ckpt/"),
+        os.path.join(os.getcwd(), "classifier_ckpt/"),
         classifier,
         step=FLAGS.num_epochs,
         overwrite=True,

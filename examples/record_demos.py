@@ -6,21 +6,17 @@ import pickle as pkl
 import datetime
 from absl import app, flags
 import time
-os.chdir(os.path.dirname(__file__))
-
 
 from experiments.mappings import CONFIG_MAPPING
 
 FLAGS = flags.FLAGS
-flags.DEFINE_string("exp_name", "ram_insertion", "Name of experiment corresponding to folder.")
-flags.DEFINE_integer("successes_needed", 10, "Number of successful transistions to collect.")
-flags.DEFINE_string("demo_dir", "/home/eai/ccw/hil-serl/examples/experiments/ram_insertion/demo_data", "Path to the data directory.")
-
+flags.DEFINE_string("exp_name", None, "Name of experiment corresponding to folder.")
+flags.DEFINE_integer("successes_needed", 20, "Number of successful demos to collect.")
 
 def main(_):
     assert FLAGS.exp_name in CONFIG_MAPPING, 'Experiment folder not found.'
     config = CONFIG_MAPPING[FLAGS.exp_name]()
-    env = config.get_environment(fake_env=False, save_video=False, classifier=True,exp_name=FLAGS.exp_name)
+    env = config.get_environment(fake_env=False, save_video=False, classifier=True)
     
     obs, info = env.reset()
     print("Reset done")
@@ -62,11 +58,11 @@ def main(_):
             trajectory = []
             returns = 0
             obs, info = env.reset()
-
-    if not os.path.exists(FLAGS.demo_dir):
-        os.makedirs(FLAGS.demo_dir)
+            
+    if not os.path.exists("./demo_data"):
+        os.makedirs("./demo_data")
     uuid = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    file_name = f"{FLAGS.demo_dir}/{FLAGS.exp_name}_{success_needed}_demos_{uuid}.pkl"
+    file_name = f"./demo_data/{FLAGS.exp_name}_{success_needed}_demos_{uuid}.pkl"
     with open(file_name, "wb") as f:
         pkl.dump(transitions, f)
         print(f"saved {success_needed} demos to {file_name}")
