@@ -83,7 +83,7 @@ def create_classifier(
 
     file_name = "resnet10_params.pkl"
     # Construct the full path to the file
-    file_path = os.path.expanduser("~/hil-serl/")
+    file_path = os.path.expanduser("~/ccw/hil-serl/")
     if not os.path.exists(file_path):
         os.makedirs(file_path)
     file_path = os.path.join(file_path, file_name)

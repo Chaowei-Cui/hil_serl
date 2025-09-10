@@ -99,7 +99,7 @@ class TrainConfig(DefaultTrainingConfig):
     encoder_type = "resnet-pretrained"
     setup_mode = "single-arm-fixed-gripper"
 
-    def get_environment(self, fake_env=False, save_video=False, classifier=False):
+    def get_environment(self, fake_env=False, save_video=False, classifier=False,exp_name="ram_insertion"):
         env = RAMEnv(
             fake_env=fake_env,
             save_video=save_video,
@@ -117,13 +117,17 @@ class TrainConfig(DefaultTrainingConfig):
                 key=jax.random.PRNGKey(0),
                 sample=env.observation_space.sample(),
                 image_keys=self.classifier_keys,
-                checkpoint_path=os.path.abspath("classifier_ckpt/"),
+                checkpoint_path=os.path.abspath(f"experiments/{exp_name}/classifier_ckpt/"),
             )
 
             def reward_func(obs):
                 sigmoid = lambda x: 1 / (1 + jnp.exp(-x))
                 # added check for z position to further robustify classifier, but should work without as well
-                return int(sigmoid(classifier(obs)) > 0.85 and obs['state'][0, 6] > 0.04)
+                #return int(sigmoid(classifier(obs)) > 0.85 and obs['state'][0, 6] > 0.04)
+                #ok = bool((sigmoid(classifier(obs)) > 0.85 and obs['state'][0, 6] > 0.04).squeeze())
+                ok=True
+                return int(ok)
+
 
             env = MultiCameraBinaryRewardClassifierWrapper(env, reward_func)
         return env
